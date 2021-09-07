@@ -9,7 +9,6 @@ import android.os.Environment
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.widget.Toast
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.commons.net.ftp.FTPFile
@@ -20,13 +19,11 @@ import java.util.concurrent.TimeUnit
 class MainActivity : AppCompatActivity()
 {
 
-    public var actyvityClose = false
 
    override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val PermTest = ContextCompat . checkSelfPermission ( this , Manifest.permission.WRITE_EXTERNAL_STORAGE )
         if ((ContextCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE ) == -1)
             ||(ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE ) == -1)
             ||(ContextCompat.checkSelfPermission(this,Manifest.permission.INTERNET ) == -1))
@@ -38,7 +35,7 @@ class MainActivity : AppCompatActivity()
         try
         {
             vers = intent.extras!!.getString("tsdVers")!!
-            vers = vers.toString().trim()
+            vers = vers.trim()
         }
         catch (e: Exception)
         {
@@ -47,9 +44,7 @@ class MainActivity : AppCompatActivity()
         conn.execute(vers)
 
         while (!conn.get())
-        {
-            TimeUnit.SECONDS.sleep(5);
-        }
+            TimeUnit.SECONDS.sleep(5)
 
         val intent = Intent(this, InstActivity::class.java)
         startActivityForResult(intent, 10)
@@ -74,36 +69,29 @@ class MainActivity : AppCompatActivity()
 
     }
 }
-class ConnectFtp :AsyncTask<String,Any,Boolean> ()
-{
-    override fun doInBackground(vararg params: String): Boolean
-    {
+class ConnectFtp :AsyncTask<String,Any,Boolean> () {
+    override fun doInBackground(vararg params: String): Boolean {
         var yourFilePath: String = Environment.getExternalStorageDirectory().path
         yourFilePath += "/Download/wpm.apk"
-       // yourFilePath = "/storage/ipsm/android/download/wpm.apk"
-        // var fInput = FileOutputStream(yourFilePath)
-        val fs: String = "wpma.apk"
+        val fs = "wpma.apk"
 
-        var mFTPClient = FTPClient()
-       // connecting to the host
+        val mFTPClient = FTPClient()
+        // connecting to the host
         mFTPClient.autodetectUTF8 = true
-        mFTPClient.connect("192.168.8.59",21)
-        mFTPClient.login("robot_zyxel","AC22fv#\$")
+        mFTPClient.connect("192.168.8.59", 21)
+        mFTPClient.login("robot_zyxel", "AC22fv#\$")
         mFTPClient.setFileType(FTP.BINARY_FILE_TYPE)
         mFTPClient.enterLocalPassiveMode()
-        var pathname = "/claim/wpm/" + params[0] + "/"
+        val pathname = "/claim/wpm/" + params[0] + "/"
         mFTPClient.changeWorkingDirectory(pathname)
         val ftpFiles: Array<FTPFile> = mFTPClient.listFiles(pathname)
         val length = ftpFiles.size
-        var fileList = arrayOfNulls<String>(length)
         for (i in 0 until length) {
-            val name: String = ftpFiles[i].getName()
-            val isFile: Boolean = ftpFiles[i].isFile()
-            if (name == fs)
-            {
-                var desFileStream = FileOutputStream(yourFilePath)
+            val name: String = ftpFiles[i].name
+            if (name == fs) {
+                val desFileStream = FileOutputStream(yourFilePath)
                 mFTPClient.retrieveFile(name, desFileStream)
-                mFTPClient.getReplyCode()
+                mFTPClient.replyCode
                 desFileStream.close()
             }
         }

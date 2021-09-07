@@ -11,26 +11,23 @@ class InstActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_inst)
+        setContentView(R.layout.activity_main)
         var yourFilePath: String = Environment.getExternalStorageDirectory().path
         yourFilePath += "/Download/wpm.apk"
         val intent = Intent(Intent.ACTION_VIEW)
         val uri = Uri.fromFile(File(yourFilePath))
         intent.setDataAndType(uri, "application/vnd.android.package-archive")
-        val IntentInstal= Intent.createChooser(intent, "Установка")
+        val intentInst = Intent.createChooser(intent, "Установка")
 
-        startActivityForResult(IntentInstal,2);
+        startActivityForResult(intentInst, 2)
 
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         // если пришло ОК
-        if (resultCode == 1)
-        {
-            //android.os.Process.killProcess(android.os.Process.myPid());
+        if (resultCode == 1) {
             this.finish()
-        }
-        else
-        {
+        } else {
             this.finish()
         }
 
